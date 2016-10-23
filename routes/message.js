@@ -37,8 +37,7 @@ router.get('/monitor', function (req, res) {
 
     res.write("data: Start monitoring...\n\n");
 
-    var connectionString = 'HostName=iot-hub-hendry.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=FE98m4TB4e5J/RzCpgtMV8+WXiXuZeRnBN8WzlaZTJQ=';
-    var client = EventHubClient.fromConnectionString(connectionString);
+    var client = EventHubClient.fromConnectionString(req.query.connectionString);
     client.open()
     .then(client.getPartitionIds.bind(client))
     .then(function (partitionIds) {
