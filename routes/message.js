@@ -3,7 +3,7 @@ var router = express.Router();
 var clientFromConnectionString = require('azure-iot-device-http').clientFromConnectionString;
 var Message = require('azure-iot-device').Message;
 
-router.get('/', function (req, apiRes) {
+router.post('/', function (req, apiRes) {
     var client = clientFromConnectionString(req.query.connectionString);
     var message = req.query.message
 
