@@ -38,13 +38,14 @@ router.get('/monitor', function (req, res) {
     res.write("data: Start monitoring...\n\n");
 
     var client = EventHubClient.fromConnectionString(req.query.connectionString);
+    var consumerGroup = req.query.consumerGroup ? req.query.consumerGroup : '$Default';
     client.open()
     .then(client.getPartitionIds.bind(client))
     .then(function (partitionIds) {
         return partitionIds.map(function (partitionId) {
-            return client.createReceiver('$Default', partitionId, { 'startAfterTime' : Date.now()}).then(function(receiver) {
-                console.log('Created partition receiver: ' + partitionId)
-                writeSSEData(res, 'Created partition receiver: ' + partitionId);
+            return client.createReceiver(consumerGroup, partitionId, { 'startAfterTime' : Date.now()}).then(function(receiver) {
+                console.log('Created partition receiver [' + partitionId + '] for consumerGroup [' + consumerGroup + ']');
+                writeSSEData(res, 'Created partition receiver [' + partitionId + '] for consumerGroup [' + consumerGroup + ']');
                 receiver.on('errorReceived', printError(res));
                 receiver.on('message', printMessage(res));
             });
