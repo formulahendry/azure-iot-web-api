@@ -46,7 +46,7 @@ router.get('/monitor', function (req, res) {
             return client.createReceiver(consumerGroup, partitionId, { 'startAfterTime' : Date.now()}).then(function(receiver) {
                 console.log('Created partition receiver [' + partitionId + '] for consumerGroup [' + consumerGroup + ']');
                 writeSSEData(res, 'Created partition receiver [' + partitionId + '] for consumerGroup [' + consumerGroup + ']');
-                receiver.on('errorReceived', printError(res));
+                receiver.on('errorReceived', printError(res, client));
                 receiver.on('message', printMessage(res));
             });
         });
@@ -54,10 +54,13 @@ router.get('/monitor', function (req, res) {
     .catch(printError);
 });
 
-function printError(res) {
+function printError(res, client) {
     return function (err) {
         writeSSEData(res, err.message);
+        writeSSEData(res, 'Stop monitoring...');
         console.log(err.message);
+        console.log('Stop monitoring...');
+        client.close();
     };
 };
 
